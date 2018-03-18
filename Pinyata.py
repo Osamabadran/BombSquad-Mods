@@ -24,10 +24,10 @@ class PinyataGame(bs.TeamGameActivity):
     
     @classmethod
     def getDescription(cls,sessionType):
-        return 'Ezginin Top Havuzu'
+        return 'Test'
 	
 	def getInstanceDescription(self):
-		return 'EZGi TOP OYNASiN'
+		return 'TEST'
 
     # we're currently hard-coded for one map..
     @classmethod
