@@ -1,5 +1,6 @@
-import bs
+import bs       #crated by "Myth B." 2016 github.com/MythB
 import random
+import bsUtils
 
 def bsGetAPIVersion():
     # see bombsquadgame.com/apichanges
@@ -13,11 +14,11 @@ class BallDeathMessage(object):
     def __init__(self,ball):
         self.ball = ball
 
-#flags are using like goalposts
+#flags are goalposts
 class FlagKaleFour(bs.Actor):
 
 
-    def __init__(self,position=(0,2.5,0),color=(1.0,0.25,0.2)):
+    def __init__(self,position=(0,2.5,0)):
         bs.Actor.__init__(self)
 
         activity = self.getActivity()
@@ -26,7 +27,7 @@ class FlagKaleFour(bs.Actor):
         self.node = bs.newNode("flag",
                                attrs={'position':(position[0],position[1]+0.75,position[2]),
                                       'colorTexture':activity._flagKaleTex,
-                                      'color':color,
+                                      'color':_colorTeam1,
                                       'materials':[bs.getSharedObject('objectMaterial'),activity._kaleMaterial]},
                                delegate=self)
 
@@ -43,11 +44,11 @@ class FlagKaleFour(bs.Actor):
         else:
             bs.Actor.handleMessage(self,m)
 
-#flags are using like goalposts
+#flags are goalposts
 class FlagKaleThree(bs.Actor):
 
 
-    def __init__(self,position=(0,2.5,0),color=(1.0,0.25,0.2)):
+    def __init__(self,position=(0,2.5,0)):
         bs.Actor.__init__(self)
 
         activity = self.getActivity()
@@ -56,7 +57,7 @@ class FlagKaleThree(bs.Actor):
         self.node = bs.newNode("flag",
                                attrs={'position':(position[0],position[1]+0.75,position[2]),
                                       'colorTexture':activity._flagKaleTex,
-                                      'color':color,
+                                      'color':_colorTeam1,
                                       'materials':[bs.getSharedObject('objectMaterial'),activity._kaleMaterial]},
                                delegate=self)
 
@@ -73,11 +74,11 @@ class FlagKaleThree(bs.Actor):
         else:
             bs.Actor.handleMessage(self,m)
 
-#flags are using like goalposts
+#flags are goalposts
 class FlagKaleTwo(bs.Actor):
 
 
-    def __init__(self,position=(0,2.5,0),color=(0.2,0.25,1)):
+    def __init__(self,position=(0,2.5,0)):
         bs.Actor.__init__(self)
 
         activity = self.getActivity()
@@ -86,7 +87,7 @@ class FlagKaleTwo(bs.Actor):
         self.node = bs.newNode("flag",
                                attrs={'position':(position[0],position[1]+0.75,position[2]),
                                       'colorTexture':activity._flagKaleTex,
-                                      'color':color,
+                                      'color':_colorTeam0,
                                       'materials':[bs.getSharedObject('objectMaterial'),activity._kaleMaterial]},
                                delegate=self)
 
@@ -103,11 +104,11 @@ class FlagKaleTwo(bs.Actor):
         else:
             bs.Actor.handleMessage(self,m)
 
-#flags are using like goalposts
+#flags are goalposts
 class FlagKale(bs.Actor):
 
 
-    def __init__(self,position=(0,2.5,0),color=(0.2,0.25,1)):
+    def __init__(self,position=(0,2.5,0)):
         bs.Actor.__init__(self)
 
         activity = self.getActivity()
@@ -116,7 +117,7 @@ class FlagKale(bs.Actor):
         self.node = bs.newNode("flag",
                                attrs={'position':(position[0],position[1]+0.75,position[2]),
                                       'colorTexture':activity._flagKaleTex,
-                                      'color':color,
+                                      'color':_colorTeam0,
                                       'materials':[bs.getSharedObject('objectMaterial'),activity._kaleMaterial]},
                                delegate=self)
 
@@ -135,6 +136,7 @@ class FlagKale(bs.Actor):
 
 
  #We will play with this ball
+ #color = [0.3+c*0.7 for c in bs.getNormalizedColor(player.getTeam().color)]
 class Ball(bs.Actor):
 
     def __init__(self,position=(0,2.5,0)):
@@ -245,7 +247,7 @@ class BigBallGame(bs.TeamGameActivity):
     def __init__(self,settings):
         bs.TeamGameActivity.__init__(self,settings)
         self._scoreBoard = bs.ScoreBoard()
-
+        
         self._cheerSound = bs.getSound("cheer")
         self._chantSound = bs.getSound("crowdChant")
         self._scoreSound = bs.getSound("score")
@@ -268,7 +270,7 @@ class BigBallGame(bs.TeamGameActivity):
         self._kaleMaterial.addActions(conditions=( ("weAreYoungerThan",100),'and',
                                                    ("theyHaveMaterial",bs.getSharedObject('objectMaterial')) ),
                                       actions=( ("modifyNodeCollision","collide",False) ) )
-        #im try standing to flags own position. But ball and us should collide with flags. So its good without bombs and blasts 
+        #for flags
         self._kaleMaterial.addActions(conditions=("theyHaveMaterial",bs.Bomb.getFactory().blastMaterial),
                                       actions=(("modifyPartCollision","collide",False),
                                                ("modifyPartCollision","physical",False)))
@@ -278,7 +280,7 @@ class BigBallGame(bs.TeamGameActivity):
         self._kaleMaterial.addActions(
             conditions=('theyHaveMaterial',bs.getSharedObject('objectMaterial')),
             actions=(('impactSound',self._kaleSound,2,5)))
-        #we dont wanna collide with the night ?? sure..
+        #we dont wanna hit the night so
         self._nightMaterial = bs.Material()
         self._nightMaterial.addActions(
             conditions=(('theyHaveMaterial',bs.getSharedObject('pickupMaterial')),'or',
@@ -330,14 +332,27 @@ class BigBallGame(bs.TeamGameActivity):
         bs.TeamGameActivity.onTransitionIn(self, music='Hockey')
 
     def onBegin(self):
+        global _colorTeam0
+        global _colorTeam1
         bs.TeamGameActivity.onBegin(self)
-
+        
+        #Takim renk info colors
+        #safeTeamColor = tuple([0.5 + 0.7*c for c in team.color])
+        
+        for team in self.teams:
+            if team.getID() == 0:
+               safeTeamColor0 = team.color
+               _colorTeam0 = safeTeamColor0
+            if team.getID() == 1:
+               safeTeamColor1 = team.color
+               _colorTeam1 = safeTeamColor1
+            
         self.setupStandardTimeLimit(self.settings['Time Limit'])
         self.setupStandardPowerupDrops(enableTNT=False)
 
         self._ballSpawnPos = self.getMap().getFlagPosition(None)
         self._spawnBall()
-        #for night mode we need night actor. And same goodies for nigh mode like sparks
+        #for night mode we need night actor. And same goodies for nigh mode
         if self.settings['Night Mode']: self._nightSpawny(),self._flagKaleFlash()
 
         # set up the two score regions
@@ -434,6 +449,22 @@ class BigBallGame(bs.TeamGameActivity):
 
         self.cameraFlash(duration=10)
         self._updateScoreBoard()
+        
+        if scoringTeam.getID() == 1:
+                bs.emitBGDynamics(position=(12.66, 0.03986567039, 2.075),
+                                  velocity=(0,0,0),                       #emitType= stickers,slime,tendrils,distortion
+                                  count=random.randrange(20,70),scale=1.0,chunkType='spark') #slime,spark,splinter,ice,metal,rock,sweat
+                bs.emitBGDynamics(position=(12.66, 0.03986567039, -2.075),
+                                  velocity=(0,0,0),                       #emitType= stickers,slime,tendrils,distortion
+                                  count=random.randrange(20,70),scale=1.0,chunkType='spark') #slime,spark,splinter,ice,metal,rock,sweat
+                                  
+        if scoringTeam.getID() == 0:
+                bs.emitBGDynamics(position=(-12.45, 0.05744967453, -2.075),
+                                  velocity=(0,0,0),                       #emitType= stickers,slime,tendrils,distortion
+                                  count=random.randrange(20,70),scale=1.0,chunkType='spark') #slime,spark,splinter,ice,metal,rock,sweat
+                bs.emitBGDynamics(position=(-12.45, 0.05744967453, 2.075),
+                                  velocity=(0,0,0),                       #emitType= stickers,slime,tendrils,distortion
+                                  count=random.randrange(20,70),scale=1.0,chunkType='spark') #slime,spark,splinter,ice,metal,rock,sweat
 
     def endGame(self):
         results = bs.TeamGameResults()
@@ -467,25 +498,25 @@ class BigBallGame(bs.TeamGameActivity):
         kale2 = (-12.45, 0.05744967453, 2.075)
         kale3 = (12.66, 0.03986567039, 2.075)
         kale4 = (12.66, 0.03986567039, -2.075)
-        flash = bs.newNode("flash",
+        flash = bs.newNode("light",
                                    attrs={'position':kale1,
-                                          'size':0.20,
-                                          'color':(0.2,0.25,1)})
+                                          'radius':0.15,
+                                          'color':(1.0,1.0,0.7)})
 
-        flash = bs.newNode("flash",
+        flash = bs.newNode("light",
                                    attrs={'position':kale2,
-                                          'size':0.20,
-                                          'color':(0.2,0.25,1)})
+                                          'radius':0.15,
+                                          'color':(1.0,1.0,0.7)})
 
-        flash = bs.newNode("flash",
+        flash = bs.newNode("light",
                                    attrs={'position':kale3,
-                                          'size':0.20,
-                                          'color':(1.0,0.25,0.2)})
+                                          'radius':0.15,
+                                          'color':(0.7,1.0,1.0)})
 
-        flash = bs.newNode("flash",
+        flash = bs.newNode("light",
                                    attrs={'position':kale4,
-                                          'size':0.20,
-                                          'color':(1.0,0.25,0.2)})
+                                          'radius':0.15,
+                                          'color':(0.7,1.0,1.0)})
     #flags positions
     def _flagKalesSpawn(self):
         self._MythB = FlagKale(position=(-12.45, 0.05744967453, -2.075))
