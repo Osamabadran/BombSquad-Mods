@@ -1,6 +1,5 @@
 import bs       #crated by "Myth B." 2016 github.com/MythB
 import random
-import bsUtils
 
 def bsGetAPIVersion():
     # see bombsquadgame.com/apichanges
