@@ -1,4 +1,4 @@
-import bs        #Created By MythB #
+import bs        #Created By MythB # http://github.com/MythB
 import random
 import bsUtils
 
