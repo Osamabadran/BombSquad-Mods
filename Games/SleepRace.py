@@ -415,7 +415,7 @@ class SleepRaceGame(bs.TeamGameActivity):
                                           randomOffset=0.2,
                                           offset=(0,-1,0),
                                           position=(i.actor.node.position[0],i.actor.node.position[1]-1.2,i.actor.node.position[2])).autoRetain()
-                except:
+                except Exception:
                     pass
     def _doWakeUp(self):
         self._isSleep = True
