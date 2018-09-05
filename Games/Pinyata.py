@@ -1,4 +1,4 @@
-import bs
+import bs           #Created By MythB # http://github.com/MythB
 import random
 
 def bsGetAPIVersion():

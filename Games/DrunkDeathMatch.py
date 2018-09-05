@@ -1,4 +1,4 @@
-import bs      #just a test its not working well
+import bs      #just a test its not working well #Created By MythB # http://github.com/MythB
 import bsMap
 import random
 import math

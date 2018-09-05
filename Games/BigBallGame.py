@@ -1,4 +1,4 @@
-import bs       #crated by "Myth B." 2016 github.com/MythB
+import bs       #Created By MythB # 2016 # http://github.com/MythB
 import random
 
 def bsGetAPIVersion():
