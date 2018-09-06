@@ -409,8 +409,9 @@ class SleepRaceGame(bs.TeamGameActivity):
         if self._isSleep == False:
             for i in bs.getSession().players:
                 try:
-                    i.actor.node.handleMessage("knockout",3000)
-                    bsUtils.PopupText("Z",color=(1,1,1),
+                    if i.actor.exists() and i.actor.isAlive():
+                       i.actor.node.handleMessage("knockout",3000)
+                       zZZText = bsUtils.PopupText("Z",color=(1,1,1),
                                           scale=0.7,
                                           randomOffset=0.2,
                                           offset=(0,-1,0),
