@@ -407,7 +407,7 @@ class SleepRaceGame(bs.TeamGameActivity):
            self._repeaterTwo = bs.Timer(random.randrange(1000,10000),bs.WeakCall(self._doWakeUp))
     def _doSleep(self):
         if self._isSleep == False:
-            for i in bs.getSession().players:
+            for i in bs.getActivity().players:
                 try:
                     if i.actor.exists() and i.actor.isAlive():
                        i.actor.node.handleMessage("knockout",3000)
