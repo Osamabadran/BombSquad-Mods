@@ -1,8 +1,7 @@
-import bs       #Created By MythB # 2016 # http://github.com/MythB
+import bs        #Created By MythB # 2016 # http://github.com/MythB
 import random
 
 def bsGetAPIVersion():
-    # see bombsquadgame.com/apichanges
     return 4
 
 def bsGetGames():
@@ -13,110 +12,17 @@ class BallDeathMessage(object):
     def __init__(self,ball):
         self.ball = ball
 
-#flags are goalposts
-class FlagKaleFour(bs.Actor):
-
-
-    def __init__(self,position=(0,2.5,0)):
-        bs.Actor.__init__(self)
-
-        activity = self.getActivity()
-        
-        # spawn just above the provided point
-        self.node = bs.newNode("flag",
-                               attrs={'position':(position[0],position[1]+0.75,position[2]),
-                                      'colorTexture':activity._flagKaleTex,
-                                      'color':_colorTeam1,
-                                      'materials':[bs.getSharedObject('objectMaterial'),activity._kaleMaterial]},
-                               delegate=self)
-
-    def handleMessage(self,m):
-        self._handleMessageSanityCheck()
-        if isinstance(m,bs.DieMessage):
-            if self.node.exists():
-                self.node.delete()
-
-        elif isinstance(m,bs.OutOfBoundsMessage):
-            # we just kill ourselves when out-of-bounds.. would we ever not want this?..
-            self.handleMessage(bs.DieMessage(how='fall'))
- 
-        else:
-            bs.Actor.handleMessage(self,m)
-
-#flags are goalposts
-class FlagKaleThree(bs.Actor):
-
-
-    def __init__(self,position=(0,2.5,0)):
-        bs.Actor.__init__(self)
-
-        activity = self.getActivity()
-        
-        # spawn just above the provided point
-        self.node = bs.newNode("flag",
-                               attrs={'position':(position[0],position[1]+0.75,position[2]),
-                                      'colorTexture':activity._flagKaleTex,
-                                      'color':_colorTeam1,
-                                      'materials':[bs.getSharedObject('objectMaterial'),activity._kaleMaterial]},
-                               delegate=self)
-
-    def handleMessage(self,m):
-        self._handleMessageSanityCheck()
-        if isinstance(m,bs.DieMessage):
-            if self.node.exists():
-                self.node.delete()
-
-        elif isinstance(m,bs.OutOfBoundsMessage):
-            # we just kill ourselves when out-of-bounds.. would we ever not want this?..
-            self.handleMessage(bs.DieMessage(how='fall'))
- 
-        else:
-            bs.Actor.handleMessage(self,m)
-
-#flags are goalposts
-class FlagKaleTwo(bs.Actor):
-
-
-    def __init__(self,position=(0,2.5,0)):
-        bs.Actor.__init__(self)
-
-        activity = self.getActivity()
-        
-        # spawn just above the provided point
-        self.node = bs.newNode("flag",
-                               attrs={'position':(position[0],position[1]+0.75,position[2]),
-                                      'colorTexture':activity._flagKaleTex,
-                                      'color':_colorTeam0,
-                                      'materials':[bs.getSharedObject('objectMaterial'),activity._kaleMaterial]},
-                               delegate=self)
-
-    def handleMessage(self,m):
-        self._handleMessageSanityCheck()
-        if isinstance(m,bs.DieMessage):
-            if self.node.exists():
-                self.node.delete()
-
-        elif isinstance(m,bs.OutOfBoundsMessage):
-            # we just kill ourselves when out-of-bounds.. would we ever not want this?..
-            self.handleMessage(bs.DieMessage(how='fall'))
- 
-        else:
-            bs.Actor.handleMessage(self,m)
-
-#flags are goalposts
+#goalpost
 class FlagKale(bs.Actor):
-
-
-    def __init__(self,position=(0,2.5,0)):
+    def __init__(self,position=(0,2.5,0),color=(1,1,1)):
         bs.Actor.__init__(self)
 
         activity = self.getActivity()
         
-        # spawn just above the provided point
         self.node = bs.newNode("flag",
                                attrs={'position':(position[0],position[1]+0.75,position[2]),
                                       'colorTexture':activity._flagKaleTex,
-                                      'color':_colorTeam0,
+                                      'color':color,
                                       'materials':[bs.getSharedObject('objectMaterial'),activity._kaleMaterial]},
                                delegate=self)
 
@@ -125,17 +31,12 @@ class FlagKale(bs.Actor):
         if isinstance(m,bs.DieMessage):
             if self.node.exists():
                 self.node.delete()
-
         elif isinstance(m,bs.OutOfBoundsMessage):
-            # we just kill ourselves when out-of-bounds.. would we ever not want this?..
             self.handleMessage(bs.DieMessage(how='fall'))
- 
         else:
             bs.Actor.handleMessage(self,m)
 
-
- #We will play with this ball
- #color = [0.3+c*0.7 for c in bs.getNormalizedColor(player.getTeam().color)]
+#We will play with this ball
 class Ball(bs.Actor):
 
     def __init__(self,position=(0,2.5,0)):
@@ -187,7 +88,8 @@ class Ball(bs.Actor):
                         self.lastPlayersToTouch[m.sourcePlayer.getTeam().getID()] = m.sourcePlayer
         else:
             bs.Actor.handleMessage(self,m)
-#for night mode: using a actor with large shadow and little model scale 
+
+#for night mode: using a actor with large shadow and little model scale. Better then tint i think, players and objects more visible
 class NightMod(bs.Actor):
 
     def __init__(self,position=(0,1.5,0)):
@@ -269,7 +171,7 @@ class BigBallGame(bs.TeamGameActivity):
         self._kaleMaterial.addActions(conditions=( ("weAreYoungerThan",100),'and',
                                                    ("theyHaveMaterial",bs.getSharedObject('objectMaterial')) ),
                                       actions=( ("modifyNodeCollision","collide",False) ) )
-        #for flags
+        #dont collide with bombs #FIXME "standing"
         self._kaleMaterial.addActions(conditions=("theyHaveMaterial",bs.Bomb.getFactory().blastMaterial),
                                       actions=(("modifyPartCollision","collide",False),
                                                ("modifyPartCollision","physical",False)))
@@ -324,28 +226,13 @@ class BigBallGame(bs.TeamGameActivity):
     def getInstanceScoreBoardDescription(self):
         if self.settings['Score to Win'] == 1: return 'score a goal'
         else: return ('score ${ARG1} goals',self.settings['Score to Win'])
-        # s = self.settings['Score to Win']
-        # return 'score '+ str(s)+' goal'+('s' if s > 1 else '')
 
     def onTransitionIn(self):
         bs.TeamGameActivity.onTransitionIn(self, music='Hockey')
 
     def onBegin(self):
-        global _colorTeam0
-        global _colorTeam1
         bs.TeamGameActivity.onBegin(self)
-        
-        #Takim renk info colors
-        #safeTeamColor = tuple([0.5 + 0.7*c for c in team.color])
-        
-        for team in self.teams:
-            if team.getID() == 0:
-               safeTeamColor0 = team.color
-               _colorTeam0 = safeTeamColor0
-            if team.getID() == 1:
-               safeTeamColor1 = team.color
-               _colorTeam1 = safeTeamColor1
-            
+
         self.setupStandardTimeLimit(self.settings['Time Limit'])
         self.setupStandardPowerupDrops(enableTNT=False)
 
@@ -413,7 +300,7 @@ class BigBallGame(bs.TeamGameActivity):
 
                 # if weve got the player from the scoring team that last touched us, give them points
                 if scoringTeam.getID() in self._ball.lastPlayersToTouch and self._ball.lastPlayersToTouch[scoringTeam.getID()].exists():
-                    self.scoreSet.playerScored(self._ball.lastPlayersToTouch[scoringTeam.getID()],10,bigMessage=True)
+                    self.scoreSet.playerScored(self._ball.lastPlayersToTouch[scoringTeam.getID()],100,bigMessage=True)
 
                 # end game if we won
                 if team.gameData['score'] >= self.settings['Score to Win']:
@@ -449,21 +336,22 @@ class BigBallGame(bs.TeamGameActivity):
         self.cameraFlash(duration=10)
         self._updateScoreBoard()
         
+        #pretty celebrate
         if scoringTeam.getID() == 1:
                 bs.emitBGDynamics(position=(12.66, 0.03986567039, 2.075),
-                                  velocity=(0,0,0),                       #emitType= stickers,slime,tendrils,distortion
-                                  count=random.randrange(20,70),scale=1.0,chunkType='spark') #slime,spark,splinter,ice,metal,rock,sweat
+                                  velocity=(0,0,0),
+                                  count=random.randrange(20,70),scale=1.0,chunkType='spark')
                 bs.emitBGDynamics(position=(12.66, 0.03986567039, -2.075),
-                                  velocity=(0,0,0),                       #emitType= stickers,slime,tendrils,distortion
-                                  count=random.randrange(20,70),scale=1.0,chunkType='spark') #slime,spark,splinter,ice,metal,rock,sweat
+                                  velocity=(0,0,0),
+                                  count=random.randrange(20,70),scale=1.0,chunkType='spark')
                                   
         if scoringTeam.getID() == 0:
                 bs.emitBGDynamics(position=(-12.45, 0.05744967453, -2.075),
-                                  velocity=(0,0,0),                       #emitType= stickers,slime,tendrils,distortion
-                                  count=random.randrange(20,70),scale=1.0,chunkType='spark') #slime,spark,splinter,ice,metal,rock,sweat
+                                  velocity=(0,0,0),
+                                  count=random.randrange(20,70),scale=1.0,chunkType='spark')
                 bs.emitBGDynamics(position=(-12.45, 0.05744967453, 2.075),
-                                  velocity=(0,0,0),                       #emitType= stickers,slime,tendrils,distortion
-                                  count=random.randrange(20,70),scale=1.0,chunkType='spark') #slime,spark,splinter,ice,metal,rock,sweat
+                                  velocity=(0,0,0),
+                                  count=random.randrange(20,70),scale=1.0,chunkType='spark')
 
     def endGame(self):
         results = bs.TeamGameResults()
@@ -491,12 +379,15 @@ class BigBallGame(bs.TeamGameActivity):
 
     def _nightSpawny(self):
         self.MythBrk = NightMod(position=(0, 0.05744967453, 0))
-    #flags positions and sparks for night mode with their colors
+
+    #spawn some goodies on nightmode for pretty visuals
     def _flagKaleFlash(self):
+        #flags positions
         kale1 = (-12.45, 0.05744967453, -2.075)
         kale2 = (-12.45, 0.05744967453, 2.075)
         kale3 = (12.66, 0.03986567039, 2.075)
         kale4 = (12.66, 0.03986567039, -2.075)
+
         flash = bs.newNode("light",
                                    attrs={'position':kale1,
                                           'radius':0.15,
@@ -518,10 +409,16 @@ class BigBallGame(bs.TeamGameActivity):
                                           'color':(0.7,1.0,1.0)})
     #flags positions
     def _flagKalesSpawn(self):
-        self._MythB = FlagKale(position=(-12.45, 0.05744967453, -2.075))
-        self._MythB2 =FlagKaleTwo(position=(-12.45, 0.05744967453, 2.075))
-        self._MythB3 =FlagKaleThree(position=(12.66, 0.03986567039, 2.075))
-        self._MythB4 =FlagKaleFour(position=(12.66, 0.03986567039, -2.075))
+        for team in self.teams:
+            if team.getID() == 0:
+               _colorTeam0 = team.color
+            if team.getID() == 1:
+               _colorTeam1 = team.color
+
+        self._MythB = FlagKale(position=(-12.45, 0.05744967453, -2.075),color=_colorTeam0)
+        self._MythB2 =FlagKale(position=(-12.45, 0.05744967453, 2.075),color=_colorTeam0)
+        self._MythB3 =FlagKale(position=(12.66, 0.03986567039, 2.075),color=_colorTeam1)
+        self._MythB4 =FlagKale(position=(12.66, 0.03986567039, -2.075),color=_colorTeam1)
 
     def _flashBallSpawn(self):
         light = bs.newNode('light',
@@ -534,7 +431,7 @@ class BigBallGame(bs.TeamGameActivity):
     def _spawnBall(self):
         bs.playSound(self._swipSound)
         bs.playSound(self._whistleSound)
-        #this is here cuz flags can move anywise so we wanna spawn them repeatedly 
+        #this is here coz flags can move anywise so we wanna spawn them repeatedly #FIXME if you figure out
         self._flagKalesSpawn()
         self._flashBallSpawn()
 

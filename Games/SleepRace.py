@@ -396,15 +396,15 @@ class SleepRaceGame(bs.TeamGameActivity):
         self._organizer()
 
     def _organizer(self):
-          self.blablabla = bs.Timer(random.randrange(1000,15000),bs.Call(self._doNight))
+          self.blablabla = bs.Timer(random.randrange(1000,15000),bs.Call(self._doNight)) #do night
         
     def _doNight(self):
            self._isSleep = False
            self.tint = bs.getSharedObject('globals').tint
            bsUtils.animateArray(bs.getSharedObject('globals'),"tint",3,{0:self.tint,1000:(0.3,0.3,0.6)})
            bs.playSound(bs.getSound('shieldUp'),volume = 10,position = (0,10,0))
-           self._repeaterOne = bs.Timer(450,bs.WeakCall(self._doSleep),repeat=True)
-           self._repeaterTwo = bs.Timer(random.randrange(1000,10000),bs.WeakCall(self._doWakeUp))
+           self._repeaterOne = bs.Timer(450,bs.WeakCall(self._doSleep),repeat=True) #shutdown our spazs
+           self._repeaterTwo = bs.Timer(random.randrange(1000,10000),bs.WeakCall(self._doWakeUp)) #wakeup our spazs
     def _doSleep(self):
         if self._isSleep == False:
             for i in bs.getActivity().players:
@@ -416,11 +416,11 @@ class SleepRaceGame(bs.TeamGameActivity):
                                           randomOffset=0.2,
                                           offset=(0,-1,0),
                                           position=(i.actor.node.position[0],i.actor.node.position[1]-1.2,i.actor.node.position[2])).autoRetain()
-                except Exception:
-                    pass
+                except Exception as e:
+                    print ('SleepRace : _doSleep : in try block : Exception : '), e
     def _doWakeUp(self):
         self._isSleep = True
-        def Delay(): # delay for sync
+        def Delay(): # delay for sync coz our spazs are very lazy
             bs.playSound(bs.getSound('healthPowerup'),volume = 10,position = (0,10,0))
             if self.getMap().getName() == 'Lake Frigid':
                  self.tint = bs.getSharedObject('globals').tint
