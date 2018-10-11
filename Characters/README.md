@@ -2,9 +2,9 @@
 
 ![pic1](mickeybombsquad.jpg)
 
-![pic2](Cmickeybombsquad1.png)
+![pic2](mickeybombsquad1.png)
 
-![pic3](Cmickeybombsquad2.png)
+![pic3](mickeybombsquad2.png)
 
 ![pic4](mickeybombsquad3.png)
 
