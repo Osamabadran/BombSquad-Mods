@@ -11,5 +11,3 @@
 ![pic5](mickeybombsquad4.png)
 
 ![pic6](mickeybombsquad5.png)
-
-![pic7](mickeybombsquad6.png)
