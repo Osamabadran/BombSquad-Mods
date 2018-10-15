@@ -75,8 +75,7 @@ class NewPowerupFactory(PowerupFactory):
 
     def getRandomPowerupType(self, forceType=None, excludeTypes=None):
         if excludeTypes:
-            # exclude custom powerups if there is some custom powerup logic
-            # example: bsFootball.py:456
+            #FIXME bsFootball.py:456
             #FIXME runaround and onslaught !
             excludeTypes.append('superStar')
             excludeTypes.append('speed')
