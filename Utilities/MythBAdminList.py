@@ -1,0 +1,8 @@
+AdminList = []
+Fighter1stList = []
+Fighter2nd3rd = []
+FighterTop15List = []
+Scorer1stList = []
+Scorer2nd3rdList = []
+ScorerTop15List = []
+autoKickList = []
